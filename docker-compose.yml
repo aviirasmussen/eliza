@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  alpine:
+    restart: unless-stopped
+    container_name: harry
+    build: ./harry/.
+    image: harry
+  postgres:
+    restart: unless-stopped
+    container_name: db
+    build: ./db/.
+    image: db
+    environment:
+      - POSTGRES_PASSWORD=harry1979
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./db/data:/var/lib/postgresql/data
+      - ./db/postgres.conf.template:/etc/postgresql/postgresql.conf
+networks:
+  default:
+    name: db-network

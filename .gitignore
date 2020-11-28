@@ -9,4 +9,5 @@ tramp
 .\#*
 
 # directory configuration
+db/data/
 # .dir-locals.el
