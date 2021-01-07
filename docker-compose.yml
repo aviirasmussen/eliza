@@ -3,23 +3,33 @@ services:
   alpine:
     restart: unless-stopped
     container_name: harry
-    build: ./harry/.
+    # Keep in mind that the .env file is a pre-processing step for this context, i.e. is usable for the args directive.
+    # When we also define the file under env_fil, we also fill the environment with the varables, for use in the container itself.
+    env_file: .env
     image: harry
-  postgres:
-    restart: unless-stopped
-    container_name: db
-    build: ./db/.
-    image: db
-    environment:
-      - POSTGRES_PASSWORD=harry1979
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=postgres
-    command: postgres -c config_file=/etc/postgresql/postgresql.conf
-    ports:
-      - '5432:5432'
+    build:
+      context: harry
+      args:
+        HARRY_USER: $HARRY_USER
+        HARRY_GROUP: $HARRY_GROUP
+    # /data/templates is the directory home for bot rulesets aka domains for Eliza, each subdirectory under templates equals one domain with dialog plans. 
     volumes:
-      - ./db/data:/var/lib/postgresql/data
-      - ./db/postgres.conf.template:/etc/postgresql/postgresql.conf
+       - ./data/templates/:$HARRY_WORKDIR/templates
+#  postgres:
+#    restart: unless-stopped
+#    container_name: db
+#    build: ./db/.
+#    image: db
+#    environment:
+#      - POSTGRES_PASSWORD=harry1979
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_DB=postgres
+#    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+#    ports:
+#      - '5432:5432'
+#    volumes:
+#      - ./db/data:/var/lib/postgresql/data
+#      - ./db/postgres.conf.template:/etc/postgresql/postgresql.conf
 networks:
   default:
-    name: db-network
+    name: eliza-net
